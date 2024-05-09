@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,7 +15,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	accessToken := os.Getenv("ACCESS_TOKEN")
@@ -42,5 +45,13 @@ func main() {
 	if err != nil {
 		log.Println("Error while reading the response bytes:", err)
 	}
-	log.Println(string([]byte(body)))
+
+	b, _ := pretty(body)
+	fmt.Printf("%s", b)
+}
+
+func pretty(b []byte) ([]byte, error) {
+	var out bytes.Buffer
+	err := json.Indent(&out, b, "", "  ")
+	return out.Bytes(), err
 }
